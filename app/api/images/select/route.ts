@@ -1,0 +1,3 @@
+import { NextResponse } from "next/server";
+import { createAdminClient } from "@/lib/supabase/server";
+export async function POST(request:Request){try{const {foodName,imageUrl,source="google"}=await request.json();const db=createAdminClient();if(!db)return NextResponse.json({saved:false});await db.from("food_images").update({is_selected:false}).eq("food_name",foodName);const {error}=await db.from("food_images").upsert({food_name:foodName,image_url:imageUrl,source,is_selected:true},{onConflict:"food_name,image_url"});if(error)throw error;return NextResponse.json({saved:true})}catch(error){return NextResponse.json({error:error instanceof Error?error.message:"선택 저장 실패"},{status:500})}}

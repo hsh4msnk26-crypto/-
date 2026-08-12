@@ -1,0 +1,2 @@
+import type { SupabaseClient } from "@supabase/supabase-js";
+export async function uploadImage(client:SupabaseClient,bucket:string,file:File|Blob,prefix:string){const ext=file.type.includes("png")?"png":"jpg";const path=`${prefix}/${crypto.randomUUID()}.${ext}`;const {error}=await client.storage.from(bucket).upload(path,file,{contentType:file.type,upsert:false});if(error)throw error;const {data}=client.storage.from(bucket).getPublicUrl(path);return data.publicUrl}
